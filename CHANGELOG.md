@@ -1,3 +1,6 @@
+## 0.0.4
+* **Sync**: Unified repository verification parameters.
+
 ## 0.0.3
 * **New Feature**: Integrated `share_plus` to support one-line text and file sharing.
 * **Architecture**: Refactored project structure into a clean feature-based modular design.
