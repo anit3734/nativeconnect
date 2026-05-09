@@ -1,26 +1,33 @@
 import 'package:permission_handler/permission_handler.dart';
-import 'exceptions.dart';
 
-/// Core utility class to check and handle device permissions automatically before calling native APIs.
-class NativePermissions {
-  /// Checks and requests the given [Permission] automatically.
-  /// Throws a [NativeConnectException] if the permission is permanently denied.
-  static Future<bool> checkAndRequest(Permission permission) async {
+/// An enterprise gatekeeper governing explicit OS-level permission interrogations.
+///
+/// Centralises dynamic authentication lifecycles of standard capabilities such
+/// as locations, camera arrays, or file storage contexts, performing redundant
+/// logic verification on conditional states.
+class NativePermissionsHandler {
+  /// Internal constructor protecting direct instantiation.
+  NativePermissionsHandler._();
+
+  /// Initiates a proactive system request cycle targeting the assigned capability.
+  ///
+  /// Initially executes verification to determine if target capability exists in
+  /// pre-granted states. If denied or restricted, manually inflates native OS
+  /// dialogs allowing active users to approve or deny transactions.
+  ///
+  /// [permission] provides definition of targeted discrete system handler (e.g. [Permission.camera]).
+  ///
+  /// Returns the definitive enum status resolving after completion of explicit request flows.
+  static Future<PermissionStatus> request(Permission permission) async {
+    // Interrogate persistent repository for currently persisted granting vector.
     final status = await permission.status;
-
+    
+    // Logic short-circuit: Bypass OS prompt if previously sanctioned.
     if (status.isGranted) {
-      return true;
+      return PermissionStatus.granted;
     }
-
-    if (status.isPermanentlyDenied) {
-      throw NativeConnectException(
-        message: 'Permission to access ${permission.toString()} has been permanently denied. Please enable it in device settings.',
-        code: 'PERMISSION_PERMANENTLY_DENIED',
-      );
-    }
-
-    // Request the permission
-    final requestResult = await permission.request();
-    return requestResult.isGranted;
+    
+    // Deploy native request prompt to solicit modern consent.
+    return await permission.request();
   }
 }

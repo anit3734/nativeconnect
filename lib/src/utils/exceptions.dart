@@ -1,26 +1,32 @@
-/// Custom exception class to handle platform-specific errors and permission denials gracefully.
+/// A high-level, typed encapsulation representing logical and platform-layer failures.
+///
+/// Serves as the canonical standard container ensuring cross-thread uniformity
+/// across discrete Android-iOS platform channels, ensuring consuming developers 
+/// capture cleanly serialized context rather than opaque native runtime blobs.
 class NativeConnectException implements Exception {
-  /// User-friendly description of the error.
-  final String message;
-
-  /// Unique error code to identify the type of error.
+  /// High-definition identifier classifying specific fault context (e.g. "PERMISSION_DENIED").
   final String code;
 
-  /// The underlying original error or stack trace, if available.
-  final dynamic originalError;
+  /// Human-comprehensible descriptive text illustrating the error environment.
+  final String message;
 
-  /// Creates a new [NativeConnectException] with required [message] and [code].
-  const NativeConnectException({
-    required this.message,
+  /// Granular low-level underlying platform exception strings, null if irrelevant.
+  final String? details;
+
+  /// Constructs a durable custom exception container holding detailed execution metadata.
+  ///
+  /// [code] assigns consistent key identifiers targeting systematic detection logic.
+  /// [message] offers developer-centric context explanations of causality.
+  /// [details] appends secondary system stack-traces or raw native stack captures.
+  NativeConnectException({
     required this.code,
-    this.originalError,
+    required this.message,
+    this.details,
   });
 
+  /// Rejects normal instances and converts runtime references into human-legible debug definitions.
   @override
   String toString() {
-    if (originalError != null) {
-      return 'NativeConnectException [$code]: $message (Original: $originalError)';
-    }
-    return 'NativeConnectException [$code]: $message';
+    return 'NativeConnectException(code: $code, message: $message, details: $details)';
   }
 }

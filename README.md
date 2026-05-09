@@ -3,30 +3,21 @@
 [![pub package](https://img.shields.io/pub/v/nativeconnect.svg?logo=dart&logoColor=white&color=indigo)](https://pub.dev/packages/nativeconnect)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Flutter Style](https://img.shields.io/badge/style-linter-success.svg)](https://pub.dev/packages/flutter_lints)
+[![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20iOS-lightgrey.svg)](https://pub.dev/packages/nativeconnect)
 
-The most intuitive, production-grade Flutter package for seamless native device hardware integration. Interact with **Location (GPS)**, **Camera**, and **Sensors** using a unified, robust **one-line static API** with automatic permission checks and lifecycle-safe stream handlers.
-
----
-
-## 🎯 Why NativeConnect?
-
-| Feature | The Hard Way (Normal Packages) | The Smart Way (NativeConnect) |
-| :--- | :--- | :--- |
-| **Boilerplate** | 30+ lines of permission checks, try-catches & redirects | **1 Line of code** |
-| **Permissions** | Manual request loops & setting handling | **Auto-managed on-demand** |
-| **Battery Life** | Stream leaks & background drains if forgot to dispose | **Lifecycle-safe auto-pausing** |
-| **Error Handling** | Raw platform-specific codes that crash apps | **Standardized exceptions** |
+The most intuitive, production-grade Flutter package for seamless native device hardware integration. Interact with **Location**, **Camera**, **Sensors**, and **Sharing** using a unified, robust **one-line static API** with automatic permission checks and lifecycle-safe execution.
 
 ---
 
 ## ✨ Key Features
 
-* **📦 Unified Architecture**: Access Location, Camera, and Sensors with a single import `import 'package:nativeconnect/nativeconnect.dart';`. No underlying library imports required.
-* **🛡️ On-The-Fly Permissions**: Automatically checks and requests system permissions only when the feature is called. Zero upfront permission spamming.
-* **📡 Intelligent GPS Location**: Verifies if global location services are enabled on the device. Gracefully handles disabled GPS and coarse/fine accuracy levels.
-* **📸 Smart Camera & Compression**: Select front/rear camera and apply on-the-fly photo compression (`imageQuality`, `maxWidth`, `maxHeight`) to prevent memory overload.
-* **🌀 Battery-Friendly Sensors**: Streams 3D gravity accelerometer values with an auto-cancelling listener that turns off when the app goes into the background, preventing device lag and preserving battery.
-* **⚠️ Custom Exception Mapping**: Exposes a clean `NativeConnectException` with clear error codes like `LOCATION_SERVICE_DISABLED` or `CAMERA_PERMISSION_DENIED`.
+* **📦 Unified Architecture**: Access core hardware capabilities with a single import `import 'package:nativeconnect/nativeconnect.dart';`.
+* **🛡️ On-The-Fly Permissions**: Checks and requests required OS system permissions automatically, removing boilerplate logic.
+* **📡 Robust GPS Location**: Fetch accurate coordinates verifying state of device hardware GPS switches.
+* **📸 Smart Camera**: Streamline image capturing from front/rear cameras with automated on-the-fly compression.
+* **🌀 Battery-Friendly Sensors**: Highly optimized real-time 3D accelerometer stream that prevents battery leakage.
+* **📤 Universal Sharing**: Effortless distribution of application text and media files via native sharing Sheets.
+* **⚠️ Custom Exception Mapping**: Standardized `NativeConnectException` handling standardized across Android & iOS.
 
 ---
 
@@ -34,25 +25,23 @@ The most intuitive, production-grade Flutter package for seamless native device 
 
 ### 1. Add Dependency
 
-Add `nativeconnect` to your `pubspec.yaml` dependencies:
+Include `nativeconnect` within your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  nativeconnect: ^0.0.1
+  nativeconnect: ^0.0.3
 ```
 
 ### 2. Platform Permissions Configuration
 
 #### 🤖 Android Setup
 
-Insert the following permissions inside your `android/app/src/main/AndroidManifest.xml`:
+Add these nodes within `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Camera Access -->
+    <!-- Hardware Capabilities -->
     <uses-permission android:name="android.permission.CAMERA" />
-    
-    <!-- GPS Location Access -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 </manifest>
@@ -60,74 +49,80 @@ Insert the following permissions inside your `android/app/src/main/AndroidManife
 
 #### 🍏 iOS Setup
 
-Add the following keys to your `ios/Runner/Info.plist`:
+Append these key-value definitions to `ios/Runner/Info.plist`:
 
 ```xml
 <key>NSCameraUsageDescription</key>
-<string>This app requires camera access to capture photographs.</string>
+<string>Application strictly accesses camera to capture imagery payloads.</string>
 <key>NSLocationWhenInUseUsageDescription</key>
-<string>This app requires location access to retrieve physical coordinates.</string>
+<string>Application leverages hardware GPS to verify geographic coordinates.</string>
 ```
 
 ---
 
-## 💻 Code Examples
+## 💻 Code Usage Reference
 
-### 1. Fetch Current GPS Location
+### 1. Fetch GPS Coordinates (1-Line)
 
 ```dart
 import 'package:nativeconnect/nativeconnect.dart';
 
-Future<void> fetchLocation() async {
+Future<void> getLocation() async {
   try {
-    final position = await NativeConnect.getLocation(
-      accuracy: LocationAccuracy.high, // Customizable accuracy level
-    );
+    final position = await NativeConnect.getLocation();
     if (position != null) {
-      print('Latitude: ${position.latitude}, Longitude: ${position.longitude}');
+      print('Lat: ${position.latitude}, Lng: ${position.longitude}');
     }
   } on NativeConnectException catch (e) {
-    print('Location Error [${e.code}]: ${e.message}');
+    print('Location Failure: ${e.message}');
   }
 }
 ```
 
-### 2. Capture a Photo (with dynamic compression)
+### 2. Trigger Camera Capture (1-Line)
 
 ```dart
 import 'package:nativeconnect/nativeconnect.dart';
 
-Future<void> captureImage() async {
+Future<void> takePhoto() async {
   try {
-    final XFile? photo = await NativeConnect.takePhoto(
-      imageQuality: 85, // Compresses image to 85% to save bandwidth & storage
-      preferredCameraDevice: CameraDevice.rear,
+    final photo = await NativeConnect.takePhoto(
+      imageQuality: 85, // Compress 85% automatically
     );
     if (photo != null) {
-      print('Photo saved successfully: ${photo.path}');
+      print('Photo captured efficiently at path: ${photo.path}');
     }
   } on NativeConnectException catch (e) {
-    print('Camera Error [${e.code}]: ${e.message}');
+    print('Camera failure: ${e.message}');
   }
 }
 ```
 
-### 3. Stream Real-Time Gravity Sensors
+### 3. Stream Active Sensors (1-Line)
 
 ```dart
 import 'package:nativeconnect/nativeconnect.dart';
 
-void watchMovement() {
-  NativeConnect.watchGravity(
-    samplingPeriod: SensorInterval.normalInterval, // Battery-optimized sampling
-  ).listen((GravityData data) {
-    print('X Axis Force: ${data.x} m/s²');
-    print('Y Axis Force: ${data.y} m/s²');
-    print('Z Axis Force: ${data.z} m/s²');
-    print('Total Magnitude: ${data.magnitude} m/s²');
-  }, onError: (error) {
-    print('Sensor Stream Error: $error');
+void watchDeviceMotion() {
+  NativeConnect.watchGravity().listen((GravityData data) {
+    print('Vector Magnitude scalar is: ${data.magnitude} m/s²');
   });
+}
+```
+
+### 4. Share Text & Files (1-Line)
+
+```dart
+import 'package:nativeconnect/nativeconnect.dart';
+
+Future<void> shareWithOthers() async {
+  // Option A: Share pure strings or web links
+  await NativeConnect.shareText(
+    text: 'Check out NativeConnect, the ultimate productivity utility!',
+  );
+
+  // Option B: Share media file references
+  // await NativeConnect.shareFiles(files: [XFile('path/to/my/file.png')]);
 }
 ```
 
@@ -135,15 +130,15 @@ void watchMovement() {
 
 ## ✍️ Author & Creator
 
-Created with ❤️ by **Anit** 
+Developed with ❤️ by **Anit** 
 
-A passionate software developer dedicated to crafting clean, premium, and hyper-efficient developer utilities.
+A passionate developer focused on crafting hyper-efficient Flutter utilities and developer-centric abstraction Layers.
 
-- 💼 **LinkedIn**: [Connect with Anit](https://linkedin.com/)
-- 💻 **GitHub**: [Anit's Workspace](https://github.com/)
+- 💼 **LinkedIn**: [Connect with Anit](https://www.linkedin.com/in/anit-pal)
+- 💻 **GitHub**: [Anit's Workspace](https://github.com/anit3734)
 
 ---
 
 ## 🛡️ License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Distributable under standard MIT License Terms - see file [LICENSE](LICENSE) for rigorous parameters.

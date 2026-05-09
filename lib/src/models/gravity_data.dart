@@ -1,28 +1,33 @@
 import 'dart:math';
 
-/// A data model representing three-dimensional gravity or accelerometer sensor data.
+/// A structured immutable data packet encapsulating 3D spatial motion vectors.
+///
+/// Serves as the canonical format for interpreting raw accelerometer voltages,
+/// mapping generic data arrays onto accessible cartesian axial representations.
 class GravityData {
-  /// Acceleration along the X-axis.
+  /// Evaluated physical force along lateral horizontal dimension (m/s²).
   final double x;
 
-  /// Acceleration along the Y-axis.
+  /// Evaluated physical force along longitudinal vertical dimension (m/s²).
   final double y;
 
-  /// Acceleration along the Z-axis.
+  /// Evaluated physical force perpendicular to hardware display plane (m/s²).
   final double z;
 
-  /// Creates a new [GravityData] instance with the given coordinate values.
-  const GravityData({
+  /// Instantiates an immutable capsule capturing real-time hardware forces.
+  ///
+  /// [x] stores measured intensity on horizontal cartesian axis.
+  /// [y] stores measured intensity on vertical cartesian axis.
+  /// [z] stores measured intensity extending perpendicular to glass face.
+  GravityData({
     required this.x,
     required this.y,
     required this.z,
   });
 
-  /// Computes the vector magnitude of the gravity/acceleration force.
-  double get magnitude => sqrt(x * x + y * y + z * z);
-
-  @override
-  String toString() {
-    return 'GravityData(x: ${x.toStringAsFixed(2)}, y: ${y.toStringAsFixed(2)}, z: ${z.toStringAsFixed(2)}, magnitude: ${magnitude.toStringAsFixed(2)})';
-  }
+  /// Real-time, computed aggregate vector intensity (overall force scalar).
+  ///
+  /// Leverages pythagorean Euclidean distance principles `sqrt(x² + y² + z²)`
+  /// to aggregate scalar intensity values across entire 3D volume contexts.
+  double get magnitude => sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 }
